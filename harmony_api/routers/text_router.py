@@ -28,6 +28,7 @@ import copy
 import uuid
 from typing import Annotated
 from typing import List
+import re
 
 from fastapi import APIRouter, Body, status, Depends, Query
 from harmony.matching.default_matcher import match_instruments_with_function
@@ -170,7 +171,12 @@ def parse_instruments(
         instrument_key = instruments_cache.generate_key(file.content)
         if instruments_cache.has(instrument_key):
             # If instruments are cached
-            instruments.extend(instruments_cache.get(instrument_key))
+            instruments_from_cache = instruments_cache.get(instrument_key)
+            for instrument_from_cache in instruments_from_cache:
+                instrument_from_cache_copied = instrument_from_cache
+                instrument_from_cache_copied.file_name = file.file_name
+                instrument_from_cache_copied.instrument_name = re.sub(r"(?i)\.pdf$", "", file.file_name)
+                instruments.append(instrument_from_cache)
         else:
             # If instruments are not cached
             files_with_no_cached_instruments.append(file)
