@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    # Security-update PRs only (version updates disabled).
+    open-pull-requests-limit: 0
+    ignore:
+      # ML stack follows upstream harmonydata; bumping torch/transformers
+      # independently changes embedding behaviour and breaks the pinned
+      # sentence-transformers (needs transformers <5). Take these when
+      # upstream does.
+      - dependency-name: "torch"
+      - dependency-name: "transformers"
+      - dependency-name: "sentence-transformers"
